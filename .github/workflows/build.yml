@@ -22,7 +22,7 @@ jobs:
       - name: Build file .rvp
         run: |
           chmod +x gradlew
-          ./gradlew build
+          ./gradlew build -PgithubPackagesUsername=${{ github.actor }} -PgithubPackagesPassword=${{ secrets.GITHUB_TOKEN }}
 
       # 4. Cari file .rvp yang sudah jadi lalu pindahkan
       - name: Pindahkan file hasil build
