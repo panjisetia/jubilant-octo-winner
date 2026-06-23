@@ -1,37 +1,35 @@
-name: Build ReVanced Patches dari GitLab
+name: Build ReVanced Patches
 
 on:
-  workflow_dispatch: # Memungkinkan Anda menekan tombol "Run workflow" secara manual
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Setup Java 17 (Syarat wajib kompilasi ReVanced)
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # 2. Clone (Unduh) langsung dari GitLab ReVanced
-      - name: Clone dari GitLab ReVanced
+      - name: Clone GitLab ReVanced
         run: git clone https://gitlab.com/ReVanced/revanced-patches.git .
 
-      # 3. Jalankan proses Build/Kompilasi
-      - name: Build file .rvp
+      - name: Build .rvp
         run: |
           chmod +x gradlew
           ./gradlew build -PgithubPackagesUsername=${{ github.actor }} -PgithubPackagesPassword=${{ secrets.GITHUB_TOKEN }}
 
-      # 4. Cari file .rvp di seluruh folder dan pindahkan
-      - name: Pindahkan file hasil build
+      - name: Move the file
         run: |
           mkdir release_files
-          find . -type f -name "*.rvp" -exec cp {} release_files/patches.rvp \;
+          find . -type f -name "*.rvp" -not -path "./release_files/*" -exec cp {} release_files/patches.rvp \;
 
-      # 5. Rilis ke repositori GitHub Anda
-      - name: Buat GitHub Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "latest"
