@@ -24,11 +24,11 @@ jobs:
           chmod +x gradlew
           ./gradlew build -PgithubPackagesUsername=${{ github.actor }} -PgithubPackagesPassword=${{ secrets.GITHUB_TOKEN }}
 
-      # 4. Cari file .rvp yang sudah jadi lalu pindahkan
+      # 4. Cari file .rvp di seluruh folder dan pindahkan
       - name: Pindahkan file hasil build
         run: |
           mkdir release_files
-          find app/build/outputs -name "*.rvp" -exec cp {} release_files/patches.rvp \;
+          find . -type f -name "*.rvp" -exec cp {} release_files/patches.rvp \;
 
       # 5. Rilis ke repositori GitHub Anda
       - name: Buat GitHub Release
